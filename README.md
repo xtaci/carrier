@@ -1,4 +1,4 @@
-# sophon
+# carrier
 Error control coding library for go
 
 ## GF(256)
@@ -8,7 +8,7 @@ irreducible degree-eight binary polynomial. The polynomial includes its x^8
 bit; `0x11d` is commonly used by Reed-Solomon codes and `0x11b` by AES.
 
 ```go
-import "github.com/xtaci/sophon/gf256"
+import "github.com/xtaci/carrier/gf256"
 
 field, err := gf256.NewField(gf256.ReedSolomonPolynomial)
 if err != nil {
