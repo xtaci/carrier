@@ -41,3 +41,31 @@ operations are not constant-time and are not suitable for secret data.
 
 Run `go test ./...` and `go test -tags=purego ./...`; benchmarks are available
 with `go test ./gf256 -run '^$' -bench BenchmarkMulSlice`.
+
+## Convolutional encoding
+
+The `convolutional` package provides a stateful binary feedforward rate 1/n
+encoder. Select a constraint length (1–64) and one or more nonzero generator
+polynomials, each fitting within that length. Bit 0 of each polynomial selects
+the current input bit and bit i selects the input delayed by i steps.
+
+```go
+import "github.com/xtaci/carrier/convolutional"
+
+encoder, err := convolutional.NewEncoder(3, []uint64{0o7, 0o5})
+if err != nil {
+    panic(err)
+}
+encoded, err := encoder.Encode([]byte{1, 0, 1, 1})
+if err != nil {
+    panic(err)
+}
+// encoded is []byte{1, 1, 1, 0, 0, 0, 0, 1}.
+_ = encoded
+```
+
+Inputs and outputs use one byte per bit (0 or 1); output bits are interleaved
+in generator order. Calls continue the same stream, so call `Reset` before a
+new independent stream. No termination bits are added automatically: append
+constraint length minus one zero input bits to terminate at the zero state.
+An encoder must not be used concurrently without synchronization.
